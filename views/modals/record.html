@@ -1,0 +1,35 @@
+<!-- Medical Record Modal -->
+<div class="modal-overlay" id="recordModal">
+    <div class="modal">
+        <h3 id="recordModalTitle">Add Medical Record</h3>
+        <input type="hidden" id="recordId">
+        <div class="form-group">
+            <label>Patient</label>
+            <select id="recordPatient"></select>
+        </div>
+        <div class="form-group">
+            <label>Doctor</label>
+            <select id="recordDoctor"></select>
+        </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="recordDate">
+        </div>
+        <div class="form-group">
+            <label>Diagnosis</label>
+            <input type="text" id="recordDiagnosis" placeholder="Diagnosis">
+        </div>
+        <div class="form-group">
+            <label>Prescription</label>
+            <input type="text" id="recordPrescription" placeholder="Medications prescribed">
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <input type="text" id="recordNotes" placeholder="Additional notes">
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-danger" onclick="closeModal('recordModal')">Cancel</button>
+            <button class="btn btn-success" onclick="saveRecord()">Save</button>
+        </div>
+    </div>
+</div>

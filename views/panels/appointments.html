@@ -1,0 +1,14 @@
+<!-- Appointments Panel -->
+<div class="content-panel" id="panelAppointments">
+    <div class="panel-header">
+        <h3>Appointments</h3>
+        <div style="display:flex;gap:10px;">
+            <input type="text" class="search-bar" placeholder="Search..." oninput="searchAppointments(this.value)">
+            <button class="btn btn-success" id="addAppointmentBtn" onclick="openAppointmentModal()"><i class="fas fa-plus"></i> New Appointment</button>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="appointmentsTable"></tbody>
+    </table>
+</div>

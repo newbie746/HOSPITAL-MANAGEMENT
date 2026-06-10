@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS - Test Users & Run Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        h1 i { color: #667eea; margin-right: 10px; }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 36px;
+            font-size: 14px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 i { font-size: 20px; }
+        .card h2 .icon-admin { color: #e74c3c; }
+        .card h2 .icon-doctor { color: #667eea; }
+        .card h2 .icon-patient { color: #28a745; }
+        .card h2 .icon-run { color: #ff9800; }
+        .card h2 .icon-structure { color: #17a2b8; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background: #f7f9fc; }
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .role-admin { background: #fce4ec; color: #c0392b; }
+        .role-doctor { background: #e8eaf6; color: #5c6bc0; }
+        .role-patient { background: #e8f5e9; color: #2e7d32; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Consolas', monospace;
+            color: #e74c3c;
+        }
+        .steps { list-style: none; counter-reset: step; }
+        .steps li {
+            counter-increment: step;
+            padding: 10px 0 10px 40px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            text-align: center;
+            line-height: 28px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .file-tree {
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #555;
+        }
+        .file-tree .folder { color: #667eea; font-weight: 600; }
+        .file-tree .file { color: #333; }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            margin-top: 16px;
+            color: #856404;
+        }
+        .note i { margin-right: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1><i class="fas fa-hospital"></i> Hospital Management System</h1>
+    <p class="subtitle">Test Users Reference & Run Guide</p>
+
+    <!-- HOW TO RUN -->
+    <div class="card">
+        <h2><i class="fas fa-play-circle icon-run"></i> How to Run</h2>
+        <ol class="steps">
+            <li>Open the project folder <code>Project07_04</code> in VS Code.</li>
+            <li>Right-click <code>index.html</code> → <strong>"Open with Live Server"</strong> (requires Live Server extension). This is required because HTML views are loaded dynamically.</li>
+            <li>The login page will appear. Use any credentials from the tables below.</li>
+            <li>To view the database, click the <strong>"Database Viewer"</strong> link at the bottom of the sidebar after logging in, or open <code>db-viewer.html</code> directly.</li>
+        </ol>
+        <div class="note">
+            <i class="fas fa-info-circle"></i>
+            No server installation needed, but you must use <strong>VS Code Live Server</strong> (or any local HTTP server) because the app loads HTML view partials via <code>fetch()</code>.
+            The database runs entirely in the browser using sql.js persisted in localStorage.
+            To reset all data, clear localStorage in DevTools → Application → Local Storage → delete <code>hms_database</code>.
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="card">
+        <h2><i class="fas fa-user-shield icon-admin"></i> Admin User</h2>
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Password</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Administrator</td>
+                    <td><code>admin@hms.com</code></td>
+                    <td><code>admin123</code></td>
+                    <td><span class="role-badge role-admin">Admin</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            <i class="fas fa-key"></i>
+            Admin has full access: manage doctors, patients, appointments, medical records, and all user accounts.
+        </div>
+    </div>
+
+    <!-- DOCTORS -->
+    <div class="card">
+        <h2><i class="fas fa-user-md icon-doctor"></i> Doctor Users</h2>
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Password</th><th>Specialization</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dr. Sarah Smith</td>
+                    <td><code>sarah@hms.com</code></td>
+                    <td><code>doctor123</code></td>
+                    <td>Cardiology</td>
+                    <td><span class="role-badge role-doctor">Doctor</span></td>
+                </tr>
+                <tr>
+                    <td>Dr. James Wilson</td>
+                    <td><code>james@hms.com</code></td>
+                    <td><code>doctor123</code></td>
+                    <td>Neurology</td>
+                    <td><span class="role-badge role-doctor">Doctor</span></td>
+                </tr>
+                <tr>
+                    <td>Dr. Emily Brown</td>
+                    <td><code>emily@hms.com</code></td>
+                    <td><code>doctor123</code></td>
+                    <td>Orthopedics</td>
+                    <td><span class="role-badge role-doctor">Doctor</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            <i class="fas fa-stethoscope"></i>
+            Doctors can view their patients, manage their appointments, and create/edit medical records.
+        </div>
+    </div>
+
+    <!-- PATIENTS -->
+    <div class="card">
+        <h2><i class="fas fa-users icon-patient"></i> Patient Users</h2>
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Password</th><th>Age</th><th>Gender</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td><code>john@hms.com</code></td>
+                    <td><code>patient123</code></td>
+                    <td>35</td>
+                    <td>Male</td>
+                    <td><span class="role-badge role-patient">Patient</span></td>
+                </tr>
+                <tr>
+                    <td>Jane Miller</td>
+                    <td><code>jane@hms.com</code></td>
+                    <td><code>patient123</code></td>
+                    <td>28</td>
+                    <td>Female</td>
+                    <td><span class="role-badge role-patient">Patient</span></td>
+                </tr>
+                <tr>
+                    <td>Bob Johnson</td>
+                    <td><code>bob@hms.com</code></td>
+                    <td><code>patient123</code></td>
+                    <td>45</td>
+                    <td>Male</td>
+                    <td><span class="role-badge role-patient">Patient</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            <i class="fas fa-id-card"></i>
+            Patients can view their appointments, cancel pending ones, view their medical records, and see their profile.
+        </div>
+    </div>
+
+    <!-- PROJECT STRUCTURE -->
+    <div class="card">
+        <h2><i class="fas fa-folder-tree icon-structure"></i> Project Structure</h2>
+        <div class="file-tree">
+            <span class="folder">Project07_04/</span><br>
+            ├── <span class="file">index.html</span> — App shell (minimal HTML)<br>
+            ├── <span class="file">db-viewer.html</span> — Database viewer & SQL editor<br>
+            ├── <span class="file">test-users.html</span> — This document<br>
+            ├── <span class="folder">views/</span><br>
+            │&nbsp;&nbsp; ├── <span class="file">auth.html</span> — Login & register pages<br>
+            │&nbsp;&nbsp; ├── <span class="file">app-shell.html</span> — Sidebar & topbar<br>
+            │&nbsp;&nbsp; ├── <span class="folder">panels/</span><br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">dashboard.html</span> — Dashboard panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">doctors.html</span> — Doctors panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">patients.html</span> — Patients panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">appointments.html</span> — Appointments panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">records.html</span> — Records panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="file">users.html</span> — Users panel<br>
+            │&nbsp;&nbsp; │&nbsp;&nbsp; └── <span class="file">profile.html</span> — Profile panel<br>
+            │&nbsp;&nbsp; └── <span class="folder">modals/</span><br>
+            │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">doctor.html</span> — Doctor modal<br>
+            │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">patient.html</span> — Patient modal<br>
+            │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">appointment.html</span> — Appointment modal<br>
+            │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="file">record.html</span> — Record modal<br>
+            ├── <span class="folder">css/</span><br>
+            │&nbsp;&nbsp; ├── <span class="file">base.css</span> — Reset & global styles<br>
+            │&nbsp;&nbsp; ├── <span class="file">auth.css</span> — Login & register pages<br>
+            │&nbsp;&nbsp; ├── <span class="file">forms.css</span> — Form inputs & labels<br>
+            │&nbsp;&nbsp; ├── <span class="file">buttons.css</span> — Button variants<br>
+            │&nbsp;&nbsp; ├── <span class="file">layout.css</span> — Sidebar & topbar<br>
+            │&nbsp;&nbsp; ├── <span class="file">components.css</span> — Cards, tables, badges, alerts<br>
+            │&nbsp;&nbsp; ├── <span class="file">modals.css</span> — Modal dialogs<br>
+            │&nbsp;&nbsp; └── <span class="file">toasts.css</span> — Toast notifications<br>
+            └── <span class="folder">js/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">db.js</span> — Database init & schema<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">loader.js</span> — HTML view loader<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">helpers.js</span> — Utilities & event listeners<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">auth.js</span> — Authentication<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">dashboard.js</span> — Navigation & stats<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">doctors.js</span> — Doctor CRUD<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">patients.js</span> — Patient CRUD<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">appointments.js</span> — Appointment CRUD<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">records.js</span> — Medical records CRUD<br>
+            &nbsp;&nbsp;&nbsp;&nbsp; └── <span class="file">users.js</span> — User management & profile<br>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

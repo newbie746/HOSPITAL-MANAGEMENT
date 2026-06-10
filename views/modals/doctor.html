@@ -1,0 +1,31 @@
+<!-- Doctor Modal -->
+<div class="modal-overlay" id="doctorModal">
+    <div class="modal">
+        <h3 id="doctorModalTitle">Add Doctor</h3>
+        <input type="hidden" id="doctorId">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="doctorName" placeholder="Doctor's full name">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="doctorEmail" placeholder="Email address">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="doctorPassword" placeholder="Account password">
+        </div>
+        <div class="form-group">
+            <label>Specialization</label>
+            <input type="text" id="doctorSpec" placeholder="e.g. Cardiology, Neurology">
+        </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="doctorPhone" placeholder="Phone number">
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-danger" onclick="closeModal('doctorModal')">Cancel</button>
+            <button class="btn btn-success" onclick="saveDoctor()">Save</button>
+        </div>
+    </div>
+</div>

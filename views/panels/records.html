@@ -1,0 +1,14 @@
+<!-- Medical Records Panel -->
+<div class="content-panel" id="panelRecords">
+    <div class="panel-header">
+        <h3>Medical Records</h3>
+        <div style="display:flex;gap:10px;">
+            <input type="text" class="search-bar" placeholder="Search records..." oninput="searchRecords(this.value)">
+            <button class="btn btn-success" id="addRecordBtn" onclick="openRecordModal()"><i class="fas fa-plus"></i> Add Record</button>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Diagnosis</th><th>Prescription</th><th>Actions</th></tr></thead>
+        <tbody id="recordsTable"></tbody>
+    </table>
+</div>

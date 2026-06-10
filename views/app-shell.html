@@ -1,0 +1,31 @@
+<!-- ========== MAIN APP SHELL ========== -->
+<div class="app-container" id="appContainer">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-hospital"></i></div>
+            <h2>HMS</h2>
+            <small id="sidebarRole">Admin Panel</small>
+        </div>
+        <nav class="sidebar-nav" id="sidebarNav"></nav>
+        <div class="sidebar-bottom">
+            <a href="db-viewer.html" class="sidebar-db-link" target="_blank">
+                <i class="fas fa-database"></i> Database Viewer
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="topbar">
+            <h2 id="pageTitle">Dashboard</h2>
+            <div class="user-info">
+                <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+                <span id="userName">Admin</span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+        <div id="alertArea"></div>
+        <!-- Panels are injected here by loader.js -->
+    </div>
+</div>

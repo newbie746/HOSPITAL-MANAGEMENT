@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS - Database Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #313244;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-left i {
+            font-size: 24px;
+            color: #4facfe;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #cdd6f4;
+            font-weight: 600;
+        }
+
+        .header h1 span {
+            color: #4facfe;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            padding: 8px 16px;
+            border: 1px solid #45475a;
+            border-radius: 8px;
+            background: #313244;
+            color: #cdd6f4;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .header-btn:hover {
+            background: #45475a;
+            border-color: #585b70;
+        }
+
+        .header-btn.primary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-color: transparent;
+            color: #1e1e2e;
+            font-weight: 600;
+        }
+
+        .header-btn.primary:hover {
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .header-btn.danger {
+            background: linear-gradient(135deg, #f38ba8, #eb6f92);
+            border-color: transparent;
+            color: #1e1e2e;
+            font-weight: 600;
+        }
+
+        /* ===== LAYOUT ===== */
+        .layout {
+            display: flex;
+            height: calc(100vh - 57px);
+        }
+
+        /* ===== SIDEBAR - TABLE LIST ===== */
+        .db-sidebar {
+            width: 240px;
+            background: #181825;
+            border-right: 1px solid #313244;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            padding: 14px 16px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c7086;
+            font-weight: 700;
+        }
+
+        .table-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+            color: #a6adc8;
+        }
+
+        .table-item:hover {
+            background: rgba(79, 172, 254, 0.06);
+            color: #cdd6f4;
+        }
+
+        .table-item.active {
+            background: rgba(79, 172, 254, 0.1);
+            border-left-color: #4facfe;
+            color: #4facfe;
+            font-weight: 600;
+        }
+
+        .table-item i {
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+            color: #4facfe;
+        }
+
+        .table-item .row-count {
+            margin-left: auto;
+            background: #313244;
+            color: #a6adc8;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .table-schema {
+            padding: 0 16px 12px;
+            display: none;
+        }
+
+        .table-schema.active {
+            display: block;
+        }
+
+        .schema-col {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0 4px 28px;
+            font-size: 12px;
+            color: #6c7086;
+        }
+
+        .schema-col .col-name {
+            color: #a6adc8;
+        }
+
+        .schema-col .col-type {
+            color: #f9e2af;
+            font-size: 11px;
+        }
+
+        .schema-col .col-pk {
+            color: #f38ba8;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ===== MAIN PANEL ===== */
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== QUERY EDITOR ===== */
+        .query-section {
+            background: #181825;
+            border-bottom: 1px solid #313244;
+            padding: 16px;
+        }
+
+        .query-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .query-toolbar label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c7086;
+            font-weight: 700;
+        }
+
+        .query-toolbar .spacer { flex: 1; }
+
+        .query-editor {
+            width: 100%;
+            min-height: 100px;
+            max-height: 200px;
+            padding: 14px;
+            background: #1e1e2e;
+            border: 1px solid #313244;
+            border-radius: 8px;
+            color: #cdd6f4;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .query-editor:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.15);
+        }
+
+        .query-editor::placeholder { color: #45475a; }
+
+        .query-shortcuts {
+            margin-top: 8px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .shortcut-btn {
+            padding: 4px 10px;
+            background: #313244;
+            border: 1px solid #45475a;
+            border-radius: 6px;
+            color: #a6adc8;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .shortcut-btn:hover {
+            background: #45475a;
+            color: #cdd6f4;
+        }
+
+        /* ===== RESULTS ===== */
+        .results-section {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #6c7086;
+        }
+
+        .results-info .badge {
+            background: #313244;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #a6adc8;
+        }
+
+        .results-info .badge.success { color: #a6e3a1; background: rgba(166,227,161,0.1); }
+        .results-info .badge.error   { color: #f38ba8; background: rgba(243,139,168,0.1); }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .results-table th {
+            background: #313244;
+            color: #4facfe;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #45475a;
+        }
+
+        .results-table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #313244;
+            color: #cdd6f4;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .results-table tr:hover td {
+            background: rgba(79, 172, 254, 0.04);
+        }
+
+        .results-table td.null-val {
+            color: #585b70;
+            font-style: italic;
+        }
+
+        .results-table td.num-val {
+            color: #fab387;
+        }
+
+        /* ===== EMPTY / ERROR STATES ===== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #45475a;
+            gap: 14px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        .error-box {
+            background: rgba(243,139,168,0.08);
+            border: 1px solid rgba(243,139,168,0.2);
+            border-radius: 8px;
+            padding: 14px 18px;
+            color: #f38ba8;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .error-box i { margin-top: 2px; flex-shrink: 0; }
+
+        /* ===== STATUS BAR ===== */
+        .status-bar {
+            background: #181825;
+            border-top: 1px solid #313244;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6c7086;
+        }
+
+        .status-bar .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a6e3a1;
+        }
+
+        .status-dot.disconnected { background: #f38ba8; }
+
+        /* ===== HISTORY PANEL ===== */
+        .history-panel {
+            display: none;
+            position: fixed;
+            top: 57px;
+            right: 0;
+            width: 380px;
+            height: calc(100vh - 57px);
+            background: #181825;
+            border-left: 1px solid #313244;
+            z-index: 100;
+            flex-direction: column;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+        }
+
+        .history-panel.active { display: flex; }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #313244;
+        }
+
+        .history-header h3 {
+            font-size: 14px;
+            color: #cdd6f4;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .history-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .history-item:hover { background: #313244; }
+
+        .history-item .history-query {
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #a6adc8;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-item .history-time {
+            font-size: 11px;
+            color: #45475a;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <i class="fas fa-database"></i>
+        <h1><span>HMS</span> Database Viewer</h1>
+    </div>
+    <div class="header-right">
+        <a href="index.html" class="header-btn"><i class="fas fa-arrow-left"></i> Back to App</a>
+        <button class="header-btn" onclick="toggleHistory()"><i class="fas fa-clock-rotate-left"></i> History</button>
+        <button class="header-btn" onclick="exportDB()"><i class="fas fa-download"></i> Export DB</button>
+        <button class="header-btn danger" onclick="resetDB()"><i class="fas fa-trash-alt"></i> Reset DB</button>
+    </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- SIDEBAR: table list -->
+    <div class="db-sidebar">
+        <div class="sidebar-title"><i class="fas fa-layer-group"></i> Tables</div>
+        <div id="tableList"></div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-panel">
+
+        <!-- Query Editor -->
+        <div class="query-section">
+            <div class="query-toolbar">
+                <label><i class="fas fa-terminal"></i> SQL Query</label>
+                <div class="spacer"></div>
+                <button class="header-btn primary" onclick="runQuery()">
+                    <i class="fas fa-play"></i> Run <span style="font-size:11px;opacity:0.7">(Ctrl+Enter)</span>
+                </button>
+                <button class="header-btn" onclick="clearEditor()"><i class="fas fa-eraser"></i> Clear</button>
+            </div>
+            <textarea class="query-editor" id="queryEditor"
+                placeholder="Enter SQL query here... e.g. SELECT * FROM users;"></textarea>
+            <div class="query-shortcuts">
+                <button class="shortcut-btn" onclick="quickQuery('SELECT * FROM users')">All Users</button>
+                <button class="shortcut-btn" onclick="quickQuery('SELECT * FROM doctors d JOIN users u ON d.user_id = u.id')">All Doctors</button>
+                <button class="shortcut-btn" onclick="quickQuery('SELECT * FROM patients p JOIN users u ON p.user_id = u.id')">All Patients</button>
+                <button class="shortcut-btn" onclick="quickQuery('SELECT * FROM appointments')">All Appointments</button>
+                <button class="shortcut-btn" onclick="quickQuery('SELECT * FROM medical_records')">All Records</button>
+                <button class="shortcut-btn" onclick="quickQuery('SELECT name FROM sqlite_master WHERE type=\'table\'')">Show Tables</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-section" id="resultsSection">
+            <div class="empty-state">
+                <i class="fas fa-database"></i>
+                <p>Run a query or click a table to see data</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+    <div class="status-item">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+    </div>
+    <div class="status-item" id="statusInfo">
+        SQLite (sql.js) | In-Browser | localStorage
+    </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="history-panel" id="historyPanel">
+    <div class="history-header">
+        <h3><i class="fas fa-clock-rotate-left"></i> Query History</h3>
+        <button class="header-btn" onclick="toggleHistory()" style="padding:4px 8px"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="history-list" id="historyList">
+        <div class="empty-state" style="padding:40px 0;">
+            <i class="fas fa-history" style="font-size:30px"></i>
+            <p style="font-size:13px">No queries yet</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let db = null;
+let queryHistory = [];
+
+// ===== INIT =====
+async function initDB() {
+    try {
+        const SQL = await initSqlJs({
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+        });
+
+        const saved = localStorage.getItem('hms_database');
+        if (saved) {
+            const buf = new Uint8Array(JSON.parse(saved));
+            db = new SQL.Database(buf);
+            setStatus(true, 'Connected — Database loaded from localStorage');
+        } else {
+            db = new SQL.Database();
+            setStatus(true, 'Connected — Empty database (no saved data found)');
+        }
+
+        loadTableList();
+    } catch (err) {
+        setStatus(false, 'Connection failed: ' + err.message);
+    }
+}
+
+function setStatus(connected, text) {
+    document.getElementById('statusDot').className = connected ? 'status-dot' : 'status-dot disconnected';
+    document.getElementById('statusText').textContent = text;
+}
+
+// ===== TABLE LIST =====
+function loadTableList() {
+    const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name");
+    const container = document.getElementById('tableList');
+    container.innerHTML = '';
+
+    if (tables.length === 0 || tables[0].values.length === 0) {
+        container.innerHTML = '<div style="padding:16px;color:#45475a;font-size:13px;">No tables found</div>';
+        return;
+    }
+
+    const tableIcons = {
+        users: 'fa-users',
+        doctors: 'fa-user-md',
+        patients: 'fa-bed',
+        appointments: 'fa-calendar-check',
+        medical_records: 'fa-file-medical'
+    };
+
+    tables[0].values.forEach(row => {
+        const name = row[0];
+        const count = db.exec(`SELECT COUNT(*) FROM "${name}"`)[0].values[0][0];
+        const icon = tableIcons[name] || 'fa-table';
+
+        // Get schema
+        const schema = db.exec(`PRAGMA table_info("${name}")`);
+        let schemaHTML = '';
+        if (schema.length > 0) {
+            schemaHTML = schema[0].values.map(col => {
+                const pk = col[5] ? '<span class="col-pk">PK</span>' : '';
+                return `<div class="schema-col">
+                    <i class="fas fa-columns" style="font-size:10px;color:#45475a"></i>
+                    <span class="col-name">${esc(col[1])}</span>
+                    <span class="col-type">${esc(col[2])}</span>
+                    ${pk}
+                </div>`;
+            }).join('');
+        }
+
+        container.innerHTML += `
+            <div class="table-item" onclick="selectTable('${esc(name)}', this)" data-table="${esc(name)}">
+                <i class="fas ${icon}"></i>
+                <span>${esc(name)}</span>
+                <span class="row-count">${count}</span>
+            </div>
+            <div class="table-schema" id="schema_${esc(name)}">${schemaHTML}</div>
+        `;
+    });
+}
+
+function selectTable(name, el) {
+    // Toggle schema
+    document.querySelectorAll('.table-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.table-schema').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('schema_' + name).classList.toggle('active');
+
+    // Load data
+    const query = `SELECT * FROM "${name}"`;
+    document.getElementById('queryEditor').value = query;
+    executeAndRender(query);
+}
+
+// ===== QUERY EXECUTION =====
+function runQuery() {
+    const sql = document.getElementById('queryEditor').value.trim();
+    if (!sql) return;
+    executeAndRender(sql);
+}
+
+function quickQuery(sql) {
+    document.getElementById('queryEditor').value = sql;
+    executeAndRender(sql);
+}
+
+function executeAndRender(sql) {
+    const resultsEl = document.getElementById('resultsSection');
+    const startTime = performance.now();
+
+    try {
+        // Check if it's a write operation
+        const isWrite = /^\s*(INSERT|UPDATE|DELETE|CREATE|DROP|ALTER)/i.test(sql);
+
+        const results = db.exec(sql);
+        const elapsed = (performance.now() - startTime).toFixed(1);
+
+        if (isWrite) {
+            // Save to localStorage after write
+            const data = db.export();
+            localStorage.setItem('hms_database', JSON.stringify(Array.from(data)));
+            loadTableList(); // refresh counts
+        }
+
+        addHistory(sql, true);
+
+        if (results.length === 0) {
+            const changes = db.getRowsModified();
+            resultsEl.innerHTML = `
+                <div class="results-info">
+                    <span class="badge success"><i class="fas fa-check"></i> Success</span>
+                    <span>${elapsed} ms</span>
+                    ${changes > 0 ? `<span>${changes} row(s) affected</span>` : '<span>Query returned no results</span>'}
+                </div>
+            `;
+            return;
+        }
+
+        const res = results[0];
+        resultsEl.innerHTML = `
+            <div class="results-info">
+                <span class="badge success"><i class="fas fa-check"></i> Success</span>
+                <span>${res.values.length} row(s)</span>
+                <span>${elapsed} ms</span>
+            </div>
+            <table class="results-table">
+                <thead><tr>${res.columns.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+                <tbody>
+                    ${res.values.map(row => `<tr>${row.map(val => {
+                        if (val === null) return '<td class="null-val">NULL</td>';
+                        if (typeof val === 'number') return `<td class="num-val">${val}</td>`;
+                        return `<td>${esc(val)}</td>`;
+                    }).join('')}</tr>`).join('')}
+                </tbody>
+            </table>
+        `;
+
+    } catch (err) {
+        const elapsed = (performance.now() - startTime).toFixed(1);
+        addHistory(sql, false);
+        resultsEl.innerHTML = `
+            <div class="results-info">
+                <span class="badge error"><i class="fas fa-times"></i> Error</span>
+                <span>${elapsed} ms</span>
+            </div>
+            <div class="error-box">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>${esc(err.message)}</div>
+            </div>
+        `;
+    }
+}
+
+// ===== HISTORY =====
+function addHistory(sql, success) {
+    queryHistory.unshift({
+        sql: sql,
+        success: success,
+        time: new Date().toLocaleTimeString()
+    });
+
+    // Keep last 50
+    if (queryHistory.length > 50) queryHistory.pop();
+    renderHistory();
+}
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (queryHistory.length === 0) return;
+
+    list.innerHTML = queryHistory.map((h, i) => `
+        <div class="history-item" onclick="loadFromHistory(${i})">
+            <div class="history-query">
+                <i class="fas ${h.success ? 'fa-check-circle' : 'fa-times-circle'}"
+                   style="color:${h.success ? '#a6e3a1' : '#f38ba8'};margin-right:6px"></i>
+                ${esc(h.sql)}
+            </div>
+            <div class="history-time">${h.time}</div>
+        </div>
+    `).join('');
+}
+
+function loadFromHistory(idx) {
+    document.getElementById('queryEditor').value = queryHistory[idx].sql;
+    toggleHistory();
+}
+
+function toggleHistory() {
+    document.getElementById('historyPanel').classList.toggle('active');
+}
+
+// ===== ACTIONS =====
+function clearEditor() {
+    document.getElementById('queryEditor').value = '';
+    document.getElementById('queryEditor').focus();
+}
+
+function exportDB() {
+    if (!db) return;
+    const data = db.export();
+    const blob = new Blob([data], { type: 'application/x-sqlite3' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hms_database.sqlite';
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function resetDB() {
+    if (!confirm('Are you sure? This will DELETE all data and reset the database.\n\nYou will need to go back to the main app to re-seed sample data.')) return;
+    localStorage.removeItem('hms_database');
+    location.reload();
+}
+
+// ===== HELPERS =====
+function esc(str) {
+    if (str == null) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+}
+
+// Ctrl+Enter to run query
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        runQuery();
+    }
+});
+
+// Boot
+initDB();
+</script>
+
+</body>
+</html>

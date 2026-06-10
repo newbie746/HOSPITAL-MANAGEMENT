@@ -1,0 +1,11 @@
+<!-- Users Panel (Admin only) -->
+<div class="content-panel" id="panelUsers">
+    <div class="panel-header">
+        <h3>User Accounts</h3>
+        <input type="text" class="search-bar" placeholder="Search users..." oninput="searchUsers(this.value)">
+    </div>
+    <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="usersTable"></tbody>
+    </table>
+</div>

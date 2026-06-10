@@ -1,0 +1,40 @@
+<!-- Appointment Modal -->
+<div class="modal-overlay" id="appointmentModal">
+    <div class="modal">
+        <h3 id="appointmentModalTitle">New Appointment</h3>
+        <input type="hidden" id="appointmentId">
+        <div class="form-group">
+            <label>Patient</label>
+            <select id="appointmentPatient"></select>
+        </div>
+        <div class="form-group">
+            <label>Doctor</label>
+            <select id="appointmentDoctor"></select>
+        </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="appointmentDate">
+        </div>
+        <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="appointmentTime">
+        </div>
+        <div class="form-group">
+            <label>Reason</label>
+            <input type="text" id="appointmentReason" placeholder="Reason for appointment">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="appointmentStatus">
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-danger" onclick="closeModal('appointmentModal')">Cancel</button>
+            <button class="btn btn-success" onclick="saveAppointment()">Save</button>
+        </div>
+    </div>
+</div>

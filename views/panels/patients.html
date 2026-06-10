@@ -1,0 +1,14 @@
+<!-- Patients Panel (Admin/Doctor) -->
+<div class="content-panel" id="panelPatients">
+    <div class="panel-header">
+        <h3>Manage Patients</h3>
+        <div style="display:flex;gap:10px;">
+            <input type="text" class="search-bar" placeholder="Search patients..." oninput="searchPatients(this.value)">
+            <button class="btn btn-success" id="addPatientBtn" onclick="openPatientModal()"><i class="fas fa-plus"></i> Add Patient</button>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th><th>Gender</th><th>Actions</th></tr></thead>
+        <tbody id="patientsTable"></tbody>
+    </table>
+</div>
